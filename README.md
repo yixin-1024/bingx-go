@@ -1,4 +1,3 @@
-```
 # BingX Go Client
 
 This repository contains a Go client library for interacting with the BingX API. It provides a convenient way to access various trading functionalities, including spot trading and swap trading, using Go programming language.
@@ -106,4 +105,3 @@ This project is licensed under the MIT License. See the LICENSE file for more de
 ## Contact
 
 For any questions or issues, please open an issue on the GitHub repository or contact the maintainers directly.
-```
