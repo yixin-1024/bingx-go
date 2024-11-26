@@ -2,6 +2,7 @@ package bingxgo
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 	"sort"
 	"testing"
@@ -25,13 +26,13 @@ func init() {
 func TestBalance(t *testing.T) {
 	balances, err := spotClient.GetBalance()
 	assert.Equal(t, err, nil)
-
-	t.Log(balances)
+	s, _ := json.MarshalIndent(balances, "", "\t")
+	t.Log(string(s))
 }
 
 func TestBatchOrders(t *testing.T) {
 	quantity := 100.0
-	price := 0.01593
+	price := 0.01584
 
 	orders, err := spotClient.CreateBatchOrders([]SpotOrderRequest{
 		{
@@ -92,6 +93,7 @@ func TestHistoryOrders(t *testing.T) {
 	sort.Slice(orders, func(i, j int) bool {
 		return orders[i].Time > orders[j].Time
 	})
-	t.Log(orders)
+	s, _ := json.MarshalIndent(orders, "", "\t")
+	t.Log(string(s))
 
 }

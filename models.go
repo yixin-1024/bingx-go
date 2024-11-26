@@ -17,10 +17,18 @@ type SpotOrderRequest struct {
 }
 
 type SpotOrderResponse struct {
-	OrderId       int    `json:"orderId"`
-	Symbol        string `json:"symbol"`
-	Status        string `json:"status"`
-	ClientOrderId string `json:"clientOrderId"`
+	Symbol              string `json:"symbol"`
+	OrderId             int64  `json:"orderId"`
+	TransactTime        int64  `json:"transactTime"`
+	Price               string `json:"price"`
+	StopPrice           string `json:"stopPrice"`
+	OrigQty             string `json:"origQty"`
+	ExecutedQty         string `json:"executedQty"`
+	CummulativeQuoteQty string `json:"cummulativeQuoteQty"`
+	Status              string `json:"status"`
+	Type                string `json:"type"`
+	Side                string `json:"side"`
+	ClientOrderID       string `json:"clientOrderID"`
 }
 
 type SpotOrder struct {

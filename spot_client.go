@@ -41,12 +41,12 @@ func (c *SpotClient) CreateOrder(order SpotOrderRequest) (*SpotOrderResponse, er
 		return nil, err
 	}
 
-	var orderResp SpotOrderResponse
+	var orderResp BingXResponse[SpotOrderResponse]
 	err = json.Unmarshal(resp, &orderResp)
-	return &orderResp, err
+	return &orderResp.Data, err
 }
 
-func (c *SpotClient) CreateBatchOrders(orders []SpotOrderRequest, isSync bool) ([]*SpotOrderResponse, error) {
+func (c *SpotClient) CreateBatchOrders(orders []SpotOrderRequest, isSync bool) ([]SpotOrderResponse, error) {
 	endpoint := "/openApi/spot/v1/trade/batchOrders"
 
 	ordersJSON, err := json.Marshal(orders)
@@ -63,7 +63,7 @@ func (c *SpotClient) CreateBatchOrders(orders []SpotOrderRequest, isSync bool) (
 		return nil, err
 	}
 
-	var batchResp BingXResponse[map[string][]*SpotOrderResponse]
+	var batchResp BingXResponse[map[string][]SpotOrderResponse]
 	err = json.Unmarshal(resp, &batchResp)
 	return batchResp.Data["orders"], err
 }
