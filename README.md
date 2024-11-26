@@ -17,7 +17,7 @@ This repository contains a Go client library for interacting with the BingX API.
 To use this library in your project, you can simply import it into your Go application. Ensure you have Go installed and set up on your machine.
 
 ```bash
-go get github.com/yourusername/bingx-go
+go get github.com/WolffunService/bingx-go
 ```
 
 ## Usage
