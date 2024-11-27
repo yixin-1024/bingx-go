@@ -1,4 +1,4 @@
-module bingxgo
+module github.com/WolffunService/bingx-go
 
 go 1.23.1
 
