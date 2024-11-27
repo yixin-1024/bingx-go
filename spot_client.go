@@ -10,6 +10,10 @@ type SpotClient struct {
 	client *Client
 }
 
+func NewSpotClient(client *Client) SpotClient {
+	return SpotClient{client: client}
+}
+
 func (c *SpotClient) GetBalance() ([]SpotBalance, error) {
 	endpoint := "/openApi/spot/v1/account/balance"
 	params := map[string]interface{}{
