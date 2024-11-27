@@ -80,3 +80,12 @@ type OrderResponse struct {
 	Status        string `json:"status"`
 	ClientOrderId string `json:"clientOrderId"`
 }
+
+type OrderBook struct {
+	// The timestamp of when the orderbook last changed (in milliseconds)
+	Timestamp int64 `json:"ts,omitempty"`
+	// Asks order depth
+	Asks [][]string `json:"asks"`
+	// Bids order depth
+	Bids [][]string `json:"bids"`
+}

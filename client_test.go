@@ -97,3 +97,11 @@ func TestHistoryOrders(t *testing.T) {
 	t.Log(string(s))
 
 }
+
+func TestOderBook(t *testing.T) {
+	book, err := spotClient.OrderBook(symbol)
+	assert.Equal(t, err, nil)
+	t.Log(book)
+	t.Log(book.Asks[len(book.Asks)-1][0])
+	t.Log(book.Bids[0][0])
+}

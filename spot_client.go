@@ -141,3 +141,19 @@ func (c *SpotClient) HistoryOrders(symbol string) ([]SpotOrder, error) {
 	err = json.Unmarshal(resp, &orders)
 	return orders.Data["orders"], err
 }
+
+func (c *SpotClient) OrderBook(symbol string) (*OrderBook, error) {
+	endpoint := "/openApi/spot/v1/market/depth"
+	params := map[string]interface{}{
+		"symbol": symbol,
+	}
+
+	resp, err := c.client.sendRequest("GET", endpoint, params)
+	if err != nil {
+		return nil, err
+	}
+
+	var orderBook BingXResponse[OrderBook]
+	err = json.Unmarshal(resp, &orderBook)
+	return &orderBook.Data, err
+}
