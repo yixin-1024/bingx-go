@@ -1,10 +1,19 @@
 package bingxgo
 
+import "fmt"
+
 type BingXResponse[T any] struct {
 	Code     int    `json:"code"`
 	Msg      string `json:"msg"`
 	DebugMsg string `json:"debugMsg"`
 	Data     T      `json:"data"`
+}
+
+func (resp BingXResponse[T]) Error() error {
+	if resp.Code != 0 {
+		return fmt.Errorf("code: %d, msg: %s, debugMsg: %s", resp.Code, resp.Msg, resp.DebugMsg)
+	}
+	return nil
 }
 
 type SpotOrderRequest struct {

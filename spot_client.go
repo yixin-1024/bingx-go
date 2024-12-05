@@ -25,9 +25,15 @@ func (c *SpotClient) GetBalance() ([]SpotBalance, error) {
 		return nil, err
 	}
 
-	var balance BingXResponse[map[string][]SpotBalance]
-	err = json.Unmarshal(resp, &balance)
-	return balance.Data["balances"], err
+	var bingXResponse BingXResponse[map[string][]SpotBalance]
+	err = json.Unmarshal(resp, &bingXResponse)
+	if err != nil {
+		return nil, err
+	}
+	if err := bingXResponse.Error(); err != nil {
+		return nil, err
+	}
+	return bingXResponse.Data["balances"], err
 }
 
 func (c *SpotClient) CreateOrder(order SpotOrderRequest) (*SpotOrderResponse, error) {
@@ -45,9 +51,15 @@ func (c *SpotClient) CreateOrder(order SpotOrderRequest) (*SpotOrderResponse, er
 		return nil, err
 	}
 
-	var orderResp BingXResponse[SpotOrderResponse]
-	err = json.Unmarshal(resp, &orderResp)
-	return &orderResp.Data, err
+	var bingXResponse BingXResponse[SpotOrderResponse]
+	err = json.Unmarshal(resp, &bingXResponse)
+	if err != nil {
+		return nil, err
+	}
+	if err := bingXResponse.Error(); err != nil {
+		return nil, err
+	}
+	return &bingXResponse.Data, err
 }
 
 func (c *SpotClient) CreateBatchOrders(orders []SpotOrderRequest, isSync bool) ([]SpotOrderResponse, error) {
@@ -67,9 +79,15 @@ func (c *SpotClient) CreateBatchOrders(orders []SpotOrderRequest, isSync bool) (
 		return nil, err
 	}
 
-	var batchResp BingXResponse[map[string][]SpotOrderResponse]
-	err = json.Unmarshal(resp, &batchResp)
-	return batchResp.Data["orders"], err
+	var bingXResponse BingXResponse[map[string][]SpotOrderResponse]
+	err = json.Unmarshal(resp, &bingXResponse)
+	if err != nil {
+		return nil, err
+	}
+	if err := bingXResponse.Error(); err != nil {
+		return nil, err
+	}
+	return bingXResponse.Data["orders"], err
 }
 
 func (c *SpotClient) GetOpenOrders(symbol string) ([]SpotOrder, error) {
@@ -83,9 +101,15 @@ func (c *SpotClient) GetOpenOrders(symbol string) ([]SpotOrder, error) {
 		return nil, err
 	}
 
-	var orders BingXResponse[map[string][]SpotOrder]
-	err = json.Unmarshal(resp, &orders)
-	return orders.Data["orders"], err
+	var bingXResponse BingXResponse[map[string][]SpotOrder]
+	err = json.Unmarshal(resp, &bingXResponse)
+	if err != nil {
+		return nil, err
+	}
+	if err := bingXResponse.Error(); err != nil {
+		return nil, err
+	}
+	return bingXResponse.Data["orders"], err
 }
 
 func (c *SpotClient) CancelOrder(symbol string, orderId string) error {
@@ -95,8 +119,16 @@ func (c *SpotClient) CancelOrder(symbol string, orderId string) error {
 		"orderId": orderId,
 	}
 
-	_, err := c.client.sendRequest("POST", endpoint, params)
-	return err
+	resp, err := c.client.sendRequest("POST", endpoint, params)
+	var bingXResponse BingXResponse[any]
+	err = json.Unmarshal(resp, &bingXResponse)
+	if err != nil {
+		return err
+	}
+	if err := bingXResponse.Error(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (c *SpotClient) CancelAllOpenOrders(symbol string) error {
@@ -105,7 +137,15 @@ func (c *SpotClient) CancelAllOpenOrders(symbol string) error {
 		"symbol": symbol,
 	}
 
-	_, err := c.client.sendRequest("POST", endpoint, params)
+	resp, err := c.client.sendRequest("POST", endpoint, params)
+	var bingXResponse BingXResponse[any]
+	err = json.Unmarshal(resp, &bingXResponse)
+	if err != nil {
+		return err
+	}
+	if err := bingXResponse.Error(); err != nil {
+		return err
+	}
 	return err
 }
 
@@ -121,9 +161,15 @@ func (c *SpotClient) GetOrder(symbol string, orderId string) (*SpotOrder, error)
 		return nil, err
 	}
 
-	var order BingXResponse[SpotOrder]
-	err = json.Unmarshal(resp, &order)
-	return &order.Data, err
+	var bingXResponse BingXResponse[SpotOrder]
+	err = json.Unmarshal(resp, &bingXResponse)
+	if err != nil {
+		return nil, err
+	}
+	if err := bingXResponse.Error(); err != nil {
+		return nil, err
+	}
+	return &bingXResponse.Data, err
 }
 
 func (c *SpotClient) HistoryOrders(symbol string) ([]SpotOrder, error) {
@@ -137,15 +183,24 @@ func (c *SpotClient) HistoryOrders(symbol string) ([]SpotOrder, error) {
 		return nil, err
 	}
 
-	var orders BingXResponse[map[string][]SpotOrder]
-	err = json.Unmarshal(resp, &orders)
-	return orders.Data["orders"], err
+	var bingXResponse BingXResponse[map[string][]SpotOrder]
+	err = json.Unmarshal(resp, &bingXResponse)
+	if err != nil {
+		return nil, err
+	}
+	if err := bingXResponse.Error(); err != nil {
+		return nil, err
+	}
+	return bingXResponse.Data["orders"], err
 }
 
-func (c *SpotClient) OrderBook(symbol string) (*OrderBook, error) {
+func (c *SpotClient) OrderBook(symbol string, limit int) (*OrderBook, error) {
 	endpoint := "/openApi/spot/v1/market/depth"
 	params := map[string]interface{}{
 		"symbol": symbol,
+	}
+	if limit > 0 {
+		params["limit"] = limit
 	}
 
 	resp, err := c.client.sendRequest("GET", endpoint, params)
@@ -153,7 +208,13 @@ func (c *SpotClient) OrderBook(symbol string) (*OrderBook, error) {
 		return nil, err
 	}
 
-	var orderBook BingXResponse[OrderBook]
-	err = json.Unmarshal(resp, &orderBook)
-	return &orderBook.Data, err
+	var bingXResponse BingXResponse[OrderBook]
+	err = json.Unmarshal(resp, &bingXResponse)
+	if err != nil {
+		return nil, err
+	}
+	if err := bingXResponse.Error(); err != nil {
+		return nil, err
+	}
+	return &bingXResponse.Data, err
 }
