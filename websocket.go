@@ -7,9 +7,9 @@ import (
 )
 
 type WebsocketClient struct {
-	client  *Client
-	baseURL string
-	conn    *websocket.Conn
+	// client  *Client
+	// baseURL string
+	conn *websocket.Conn
 }
 
 func (c *WebsocketClient) Subscribe(streams []string, handler func([]byte)) error {

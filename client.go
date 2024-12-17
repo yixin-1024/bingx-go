@@ -39,7 +39,7 @@ func (c *Client) SetRateLimiter(rateLimiter *RateLimiter) {
 }
 
 func (c *Client) sendRequest(method string, endpoint string, params map[string]interface{}) ([]byte, error) {
-	if params == nil || len(params) == 0 {
+	if len(params) == 0 {
 		return nil, fmt.Errorf("params map is nil or empty")
 	}
 	if c.rateLimiter != nil {

@@ -1,8 +1,8 @@
 package bingxgo
 
 import (
-	"context"
 	"encoding/json"
+	"log"
 	"os"
 	"sort"
 	"testing"
@@ -12,7 +12,6 @@ import (
 
 var (
 	client     = &Client{}
-	ctx        = context.Background()
 	symbol     = "THG-USDT"
 	spotClient = &SpotClient{}
 )
@@ -99,9 +98,16 @@ func TestHistoryOrders(t *testing.T) {
 }
 
 func TestOderBook(t *testing.T) {
-	book, err := spotClient.OrderBook(symbol)
+	book, err := spotClient.OrderBook(symbol, 10)
 	assert.Equal(t, err, nil)
 	t.Log(book)
 	t.Log(book.Asks[len(book.Asks)-1][0])
 	t.Log(book.Bids[0][0])
+}
+
+func TestGetSymbolInfo(t *testing.T) {
+	symbolInfo, err := spotClient.GetSymbolInfo("SOL-USDT")
+	assert.Equal(t, err, nil)
+	t.Log(symbolInfo)
+	log.Fatal(symbolInfo)
 }

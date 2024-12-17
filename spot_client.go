@@ -120,6 +120,9 @@ func (c *SpotClient) CancelOrder(symbol string, orderId string) error {
 	}
 
 	resp, err := c.client.sendRequest("POST", endpoint, params)
+	if err != nil {
+		return err
+	}
 	var bingXResponse BingXResponse[any]
 	err = json.Unmarshal(resp, &bingXResponse)
 	if err != nil {
@@ -138,6 +141,9 @@ func (c *SpotClient) CancelAllOpenOrders(symbol string) error {
 	}
 
 	resp, err := c.client.sendRequest("POST", endpoint, params)
+	if err != nil {
+		return err
+	}
 	var bingXResponse BingXResponse[any]
 	err = json.Unmarshal(resp, &bingXResponse)
 	if err != nil {
@@ -217,4 +223,26 @@ func (c *SpotClient) OrderBook(symbol string, limit int) (*OrderBook, error) {
 		return nil, err
 	}
 	return &bingXResponse.Data, err
+}
+
+func (c *SpotClient) GetSymbolInfo(symbol string) (*SymbolInfo, error) {
+	endpoint := "/openApi/spot/v1/common/symbols"
+	params := map[string]interface{}{
+		"symbol": symbol,
+	}
+
+	resp, err := c.client.sendRequest("GET", endpoint, params)
+	if err != nil {
+		return nil, err
+	}
+
+	var bingXResponse BingXResponse[SymbolInfos]
+	err = json.Unmarshal(resp, &bingXResponse)
+	if err != nil {
+		return nil, err
+	}
+	if err := bingXResponse.Error(); err != nil {
+		return nil, err
+	}
+	return &bingXResponse.Data.Symbols[0], err
 }
