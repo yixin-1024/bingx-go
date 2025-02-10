@@ -41,17 +41,22 @@ type SpotOrderResponse struct {
 }
 
 type SpotOrder struct {
-	OrderId     int     `json:"orderId"`
-	Symbol      string  `json:"symbol"`
-	Price       string  `json:"price"`
-	OrigQty     string  `json:"origQty"`
-	ExecutedQty string  `json:"executedQty"`
-	Status      string  `json:"status"`
-	Type        string  `json:"type"`
-	Side        string  `json:"side"`
-	Time        int64   `json:"time"`
-	Fee         float64 `json:"fee"`
-	AvgPrice    float64 `json:"avgPrice"`
+	OrderID             int     `json:"orderId"`
+	ClientOrderID       string  `json:"clientOrderID"`
+	Symbol              string  `json:"symbol"`
+	Price               string  `json:"price"`
+	OrigQty             string  `json:"origQty"`
+	ExecutedQty         string  `json:"executedQty"`
+	CummulativeQuoteQty string  `json:"cummulativeQuoteQty"`
+	OrigQuoteQty        string  `json:"origQuoteOrderQty"`
+	Status              string  `json:"status"`
+	Type                string  `json:"type"`
+	Side                string  `json:"side"`
+	Time                int64   `json:"time"`
+	UpdateTime          int64   `json:"updateTime"`
+	Fee                 float64 `json:"fee"`
+	FeeAsset            string  `json:"feeAsset"`
+	AvgPrice            float64 `json:"avgPrice"`
 }
 
 type SpotBalance struct {
