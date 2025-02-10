@@ -155,12 +155,27 @@ func (c *SpotClient) CancelAllOpenOrders(symbol string) error {
 	return err
 }
 
-func (c *SpotClient) GetOrder(symbol string, orderId string) (*SpotOrder, error) {
-	endpoint := "/openApi/spot/v1/trade/order"
-	params := map[string]interface{}{
+func (c *SpotClient) GetOrder(symbol, orderID string) (*SpotOrder, error) {
+	return c.getOrderData(map[string]interface{}{
 		"symbol":  symbol,
-		"orderId": orderId,
-	}
+		"orderId": orderID,
+	})
+}
+
+func (c *SpotClient) GetOrderByClientOrderID(
+	symbol string,
+	clientOrderID string,
+) (*SpotOrder, error) {
+	return c.getOrderData(map[string]interface{}{
+		"symbol":        symbol,
+		"clientOrderID": clientOrderID,
+	})
+}
+
+func (c *SpotClient) getOrderData(
+	params map[string]interface{},
+) (*SpotOrder, error) {
+	endpoint := "/openApi/spot/v1/trade/order"
 
 	resp, err := c.client.sendRequest("GET", endpoint, params)
 	if err != nil {
