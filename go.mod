@@ -1,4 +1,4 @@
-module github.com/Sagleft/bingx-go
+module github.com/Sagleft/go-bingx
 
 go 1.23.1
 
