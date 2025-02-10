@@ -98,6 +98,13 @@ fmt.Println(swapOrderResponse)
 
 We welcome contributions to this project. Please fork the repository and submit a pull request with your changes. Ensure your code follows the existing style and includes tests where applicable.
 
+## Donate
+
+In the comment to the transaction, indicate what kind of library to BingX, then I will understand that it needs to be further developed.
+
+* USDT-Ton or TON: `UQD4otGPbsBePwdSL3PPnM6Qw_29AOpJnAcqOMOetZ-8OHHW`
+* USDT-TRC20: `TQwTR3oJcFtXXynBoWsh6wNSM7id8K1k2U`
+
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for more details.
