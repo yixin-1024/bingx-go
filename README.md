@@ -37,7 +37,7 @@ client := bingxgo.NewClient("your_api_key", "your_secret_key")
 #### Get Account Balance
 
 ```go
-spotClient := bingxgo.SpotClient{client: client}
+spotClient := bingxgo.NewSpotClient(client)
 balances, err := spotClient.GetBalance()
 if err != nil {
     log.Fatal(err)
