@@ -2,6 +2,7 @@ package bingxgo
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -260,4 +261,42 @@ func (c *SpotClient) GetSymbolInfo(symbol string) (*SymbolInfo, error) {
 		return nil, err
 	}
 	return &bingXResponse.Data.Symbols[0], err
+}
+
+func (c *SpotClient) GetHistoricalKlines(
+	symbol string,
+	interval string,
+	limit int64,
+) ([]KlineData, error) {
+	endpoint := "/openApi/market/his/v1/kline"
+	params := map[string]interface{}{
+		"symbol":   symbol,
+		"interval": interval,
+		"limit":    limit,
+	}
+
+	resp, err := c.client.sendRequest("GET", endpoint, params)
+	if err != nil {
+		return nil, fmt.Errorf("send: %w", err)
+	}
+
+	var response BingXResponse[[]KlineDataRaw]
+	err = json.Unmarshal(resp, &response)
+	if err != nil {
+		return nil, fmt.Errorf("decode: %w", err)
+	}
+	if err := response.Error(); err != nil {
+		return nil, err
+	}
+
+	var result []KlineData
+	for _, data := range response.Data {
+		kline, err := parseKlineData(data, interval)
+		if err != nil {
+			return nil, fmt.Errorf("parse: %w", err)
+		}
+
+		result = append(result, kline)
+	}
+	return result, nil
 }

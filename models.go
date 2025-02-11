@@ -123,3 +123,16 @@ type SymbolInfo struct {
 	OffTime      int64   `json:"offTime"`      // 下线时间 (Unix时间戳)
 	MaintainTime int64   `json:"maintainTime"` // 维护时间 (秒)
 }
+
+type KlineDataRaw []float64
+
+type KlineData struct {
+	StartTime int64   `json:"startTime"`
+	EndTime   int64   `json:"endTime"`
+	Interval  string  `json:"interval"`
+	Open      float64 `json:"open"`
+	High      float64 `json:"high"`
+	Low       float64 `json:"low"`
+	Close     float64 `json:"close"`
+	Volume    float64 `json:"volume"`
+}
