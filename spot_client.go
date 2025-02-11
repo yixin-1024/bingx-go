@@ -241,10 +241,11 @@ func (c *SpotClient) OrderBook(symbol string, limit int) (*OrderBook, error) {
 	return &bingXResponse.Data, err
 }
 
-func (c *SpotClient) GetSymbolInfo(symbol string) (*SymbolInfo, error) {
+func (c *SpotClient) GetSymbols(symbol ...string) ([]SymbolInfo, error) {
 	endpoint := "/openApi/spot/v1/common/symbols"
-	params := map[string]interface{}{
-		"symbol": symbol,
+	params := map[string]interface{}{}
+	if len(symbol) > 0 {
+		params["symbol"] = symbol[0]
 	}
 
 	resp, err := c.client.sendRequest("GET", endpoint, params)
@@ -260,7 +261,7 @@ func (c *SpotClient) GetSymbolInfo(symbol string) (*SymbolInfo, error) {
 	if err := bingXResponse.Error(); err != nil {
 		return nil, err
 	}
-	return &bingXResponse.Data.Symbols[0], err
+	return bingXResponse.Data.Symbols, nil
 }
 
 func (c *SpotClient) GetHistoricalKlines(
