@@ -41,14 +41,15 @@ type RequestEvent struct {
 }
 
 type WsKlineEvent struct {
-	Symbol    string  `json:"s"`
-	Open      float64 `json:"o"`
-	Close     float64 `json:"c"`
-	High      float64 `json:"h"`
-	Low       float64 `json:"l"`
-	Volume    float64 `json:"v"`
-	StartTime float64 `json:"t"`
-	EndTime   float64 `json:"T"`
+	Symbol    string   `json:"s"`
+	Interval  Interval `json:"i"`
+	Open      float64  `json:"o"`
+	Close     float64  `json:"c"`
+	High      float64  `json:"h"`
+	Low       float64  `json:"l"`
+	Volume    float64  `json:"v"`
+	StartTime float64  `json:"t"`
+	EndTime   float64  `json:"T"`
 	Completed bool
 }
 
