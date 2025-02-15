@@ -57,7 +57,9 @@ type KlineEvent struct {
 	Volume    string   `json:"v"`
 	StartTime int64    `json:"t"`
 	EndTime   int64    `json:"T"`
-	Completed bool
+
+	Completed bool  `json:"completed"`
+	EventTime int64 `json:"eventTime"`
 }
 
 type WsKlineHandler func(KlineEvent)
@@ -99,6 +101,8 @@ func WsKlineServe(
 			if lastEventEndTime == 0 {
 				lastEventEndTime = ev.Data.Kline.EndTime
 			}
+
+			ev.Data.Kline.EventTime = ev.Data.EventTime
 
 			if lastEventEndTime != ev.Data.Kline.EndTime {
 				ev.Data.Kline.Completed = true
