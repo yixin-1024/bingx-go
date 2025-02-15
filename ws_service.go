@@ -102,12 +102,13 @@ func WsKlineServe(
 				lastEventEndTime = ev.Data.Kline.EndTime
 			}
 
-			ev.Data.Kline.EventTime = ev.Data.EventTime
-
 			if lastEventEndTime != ev.Data.Kline.EndTime {
+				lastEventEndTime = ev.Data.Kline.EndTime
 				ev.Data.Kline.Completed = true
-				handler(ev.Data.Kline)
 			}
+
+			ev.Data.Kline.EventTime = ev.Data.EventTime
+			handler(ev.Data.Kline)
 		}
 	}
 
