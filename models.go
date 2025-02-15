@@ -118,7 +118,7 @@ type SpotOrder struct {
 	Side                string  `json:"side"`
 	Time                int64   `json:"time"`
 	UpdateTime          int64   `json:"updateTime"`
-	Fee                 float64 `json:"fee"`
+	Fee                 string  `json:"fee"`
 	FeeAsset            string  `json:"feeAsset"`
 	AvgPrice            float64 `json:"avgPrice"`
 }
