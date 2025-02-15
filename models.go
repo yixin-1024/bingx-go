@@ -184,6 +184,10 @@ type SymbolInfo struct {
 	MaxNotional  float64 `json:"maxNotional"`
 	Status       int     `json:"status"`
 	MaintainTime int64   `json:"maintainTime"`
+
+	// deprecated
+	MinQty float64 `json:"minQty"`
+	MaxQty float64 `json:"maxQty"`
 }
 
 type KlineDataRaw []float64
