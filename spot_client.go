@@ -187,8 +187,9 @@ func (c *SpotClient) CancelAllOpenOrders(symbol string) error {
 
 func (c *SpotClient) GetOrder(symbol, orderID string) (*SpotOrder, error) {
 	return c.getOrderData(map[string]interface{}{
-		"symbol":  symbol,
-		"orderId": orderID,
+		"symbol":    symbol,
+		"orderId":   orderID,
+		"timestamp": time.Now().UnixMilli(),
 	})
 }
 
@@ -199,6 +200,7 @@ func (c *SpotClient) GetOrderByClientOrderID(
 	return c.getOrderData(map[string]interface{}{
 		"symbol":        symbol,
 		"clientOrderID": clientOrderID,
+		"timestamp":     time.Now().UnixMilli(),
 	})
 }
 
