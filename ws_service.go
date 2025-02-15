@@ -1,9 +1,9 @@
 package bingxgo
 
 import (
-	"encoding/json"
+	"errors"
 	"fmt"
-	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -21,10 +21,17 @@ func getAccountWsEndpoint(listenKey string) string {
 	return baseAccountWsUrl + listenKey
 }
 
-type Event struct {
-	Code     int         `json:"code"`
-	DataType string      `json:"dataType"`
-	Data     interface{} `json:"data"`
+type Event[dataType any] struct {
+	Code     int      `json:"code"`
+	DataType string   `json:"dataType"`
+	Data     dataType `json:"data"`
+}
+
+type KlineEventData struct {
+	EventTime  int64      `json:"E"`
+	EventType  string     `json:"e"`
+	PairSymbol string     `json:"s"`
+	Kline      KlineEvent `json:"K"`
 }
 
 type WsRequestType string
@@ -40,20 +47,20 @@ type RequestEvent struct {
 	DataType string        `json:"dataType"`
 }
 
-type WsKlineEvent struct {
+type KlineEvent struct {
 	Symbol    string   `json:"s"`
 	Interval  Interval `json:"i"`
-	Open      float64  `json:"o"`
-	Close     float64  `json:"c"`
-	High      float64  `json:"h"`
-	Low       float64  `json:"l"`
-	Volume    float64  `json:"v"`
-	StartTime float64  `json:"t"`
-	EndTime   float64  `json:"T"`
+	Open      string   `json:"o"`
+	Close     string   `json:"c"`
+	High      string   `json:"h"`
+	Low       string   `json:"l"`
+	Volume    string   `json:"v"`
+	StartTime int64    `json:"t"`
+	EndTime   int64    `json:"T"`
 	Completed bool
 }
 
-type WsKlineHandler func(*WsKlineEvent)
+type WsKlineHandler func(KlineEvent)
 
 func WsKlineServe(
 	symbol string,
@@ -69,59 +76,35 @@ func WsKlineServe(
 		DataType: fmt.Sprintf("%s@kline_%s", symbol, interval),
 	}
 
-	var lastEvent *WsKlineEvent
+	var lastEventEndTime int64
 
 	var wsHandler = func(data []byte) {
-		ev := new(Event)
-		err := json.Unmarshal(data, ev)
+		if data == nil {
+			return
+		}
+
+		if strings.Contains(string(data), "error: ") {
+			errHandler(errors.New(string(data)))
+			return
+		}
+
+		var ev Event[KlineEventData]
+		err := json.Unmarshal(data, &ev)
 		if err != nil {
 			errHandler(err)
 			return
 		}
 
 		if ev.DataType == reqEvent.DataType {
-			_eventData := new(struct {
-				Symbol string                   `json:"s"`
-				Data   []map[string]interface{} `json:"data"`
-			})
-			err := json.Unmarshal(data, _eventData)
-			if err != nil {
-				errHandler(err)
-				return
+			if lastEventEndTime == 0 {
+				lastEventEndTime = ev.Data.Kline.EndTime
 			}
 
-			c, _ := strconv.ParseFloat(_eventData.Data[0]["c"].(string), 64)
-			h, _ := strconv.ParseFloat(_eventData.Data[0]["h"].(string), 64)
-			l, _ := strconv.ParseFloat(_eventData.Data[0]["l"].(string), 64)
-			o, _ := strconv.ParseFloat(_eventData.Data[0]["o"].(string), 64)
-			v, _ := strconv.ParseFloat(_eventData.Data[0]["v"].(string), 64)
-			t := _eventData.Data[0]["T"].(float64)
-
-			event := &WsKlineEvent{
-				Symbol:    _eventData.Symbol,
-				Open:      o,
-				Close:     c,
-				High:      h,
-				Low:       l,
-				Volume:    v,
-				EndTime:   t,
-				Completed: false,
+			if lastEventEndTime != ev.Data.Kline.EndTime {
+				ev.Data.Kline.Completed = true
+				handler(ev.Data.Kline)
 			}
-
-			if lastEvent == nil {
-				lastEvent = event
-			}
-
-			if lastEvent.EndTime != event.EndTime {
-				lastEvent.Completed = true
-			}
-
-			handler(lastEvent)
-
-			lastEvent = event
-
 		}
-
 	}
 
 	initMessage, err := json.Marshal(reqEvent)
