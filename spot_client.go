@@ -185,7 +185,7 @@ func (c *SpotClient) CancelAllOpenOrders(symbol string) error {
 	return err
 }
 
-func (c *SpotClient) GetOrder(symbol, orderID string) (*SpotOrder, error) {
+func (c *SpotClient) GetOrder(symbol string, orderID int64) (*SpotOrder, error) {
 	return c.getOrderData(map[string]interface{}{
 		"symbol":    symbol,
 		"orderId":   orderID,
