@@ -206,7 +206,7 @@ func (c *SpotClient) GetOrderByClientOrderID(
 func (c *SpotClient) getOrderData(
 	params map[string]interface{},
 ) (*SpotOrder, error) {
-	endpoint := "/openApi/spot/v1/trade/order"
+	endpoint := "/openApi/spot/v1/trade/query"
 
 	resp, err := c.client.sendRequest("GET", endpoint, params)
 	if err != nil {
