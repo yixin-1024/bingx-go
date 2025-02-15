@@ -274,7 +274,9 @@ func (c *SpotClient) OrderBook(symbol string, limit int) (*OrderBook, error) {
 
 func (c *SpotClient) GetSymbols(symbol ...string) ([]SymbolInfo, error) {
 	endpoint := "/openApi/spot/v1/common/symbols"
-	params := map[string]interface{}{}
+	params := map[string]interface{}{
+		"timestamp": time.Now().UnixMilli(),
+	}
 	if len(symbol) > 0 {
 		params["symbol"] = symbol[0]
 	}
