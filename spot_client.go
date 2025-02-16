@@ -20,7 +20,7 @@ func (c *SpotClient) get(
 	params map[string]interface{},
 	resultPointer any,
 ) error {
-	return c.client.sendRequest(method, httpGET, params, resultPointer)
+	return c.client.sendRequest(httpGET, method, params, resultPointer)
 }
 
 func (c *SpotClient) post(
@@ -28,7 +28,7 @@ func (c *SpotClient) post(
 	params map[string]interface{},
 	resultPointer any,
 ) error {
-	return c.client.sendRequest(method, httpPOST, params, resultPointer)
+	return c.client.sendRequest(httpPOST, method, params, resultPointer)
 }
 
 func (c *SpotClient) GetBalance() ([]SpotBalance, error) {
