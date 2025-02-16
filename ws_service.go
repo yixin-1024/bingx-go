@@ -150,19 +150,15 @@ type ListenKeyResponse struct {
 }
 
 func (c *SpotClient) getListenKey() (string, error) {
-	endpoint := "/openApi/user/auth/userDataStream"
-	params := map[string]interface{}{}
-
-	resp, err := c.client.sendRequest("POST", endpoint, params)
-	if err != nil {
-		return "", err
-	}
-
 	var response ListenKeyResponse
-	err = json.Unmarshal(resp, &response)
-	if err != nil {
+	if err := c.post(
+		endpointGetListenKey,
+		map[string]interface{}{},
+		&response,
+	); err != nil {
 		return "", err
 	}
+
 	return response.Key, nil
 }
 
