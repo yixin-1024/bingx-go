@@ -38,6 +38,7 @@ const (
 	endpointGetListenKey      = "/openApi/user/auth/userDataStream"
 	endpointSwapGetKlines     = "/openApi/swap/v3/quote/klines"
 	endpointSwapCreateOrder   = "/openApi/swap/v2/trade/order"
+	endpointExtendListenKey   = "/openApi/user/auth/userDataStream"
 )
 
 type Interval string

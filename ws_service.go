@@ -64,7 +64,7 @@ type KlineEvent struct {
 
 type WsKlineHandler func(KlineEvent)
 
-func WsKlineServe(
+func (c *SpotClient) WsKlineServe(
 	symbol string,
 	interval Interval,
 	handler WsKlineHandler,
@@ -117,7 +117,11 @@ func WsKlineServe(
 		return nil, nil, err
 	}
 
-	return wsServe(initMessage, newWsConfig(getWsEndpoint()), wsHandler, errHandler)
+	return c.wsServe(
+		initMessage, "",
+		newWsConfig(getWsEndpoint()),
+		wsHandler, errHandler,
+	)
 }
 
 type WsOrder struct {
@@ -191,8 +195,9 @@ func (c *SpotClient) WsOrderUpdateServe(
 		}
 	}
 
-	return wsServe(
+	return c.wsServe(
 		nil,
+		listenKey,
 		newWsConfig(getAccountWsEndpoint(listenKey)),
 		wsHandler, errHandler,
 	)

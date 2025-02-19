@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gorilla/websocket"
 	jsoniter "github.com/json-iterator/go"
 )
 
 const (
-	wsReadLimit = 655350
+	wsReadLimit            = 655350
+	extendListenKeyTimeout = time.Minute * 40
 )
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
@@ -42,8 +44,19 @@ func newWsConfig(endpoint string) *WsConfig {
 	}
 }
 
-var wsServe = func(
+func (c *SpotClient) extendListenKey(keyID string) error {
+	var result any
+	return c.client.sendRequest(
+		http.MethodPut,
+		endpointExtendListenKey,
+		map[string]interface{}{"listenKey": keyID},
+		&result,
+	)
+}
+
+func (c *SpotClient) wsServe(
 	initMessage []byte,
+	listenKeyID string,
 	config *WsConfig,
 	handler WsHandler,
 	errHandler ErrHandler,
@@ -51,34 +64,58 @@ var wsServe = func(
 	header := http.Header{}
 	header.Add("Accept-Encoding", "gzip")
 
-	c, _, err := websocket.DefaultDialer.Dial(config.Endpoint, header)
+	wsClient, _, err := websocket.DefaultDialer.Dial(config.Endpoint, header)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	if initMessage != nil {
-		err = c.WriteMessage(websocket.TextMessage, initMessage)
+		err = wsClient.WriteMessage(websocket.TextMessage, initMessage)
 		if err != nil {
 			return nil, nil, err
 		}
 	}
 
-	c.SetReadLimit(wsReadLimit)
+	wsClient.SetReadLimit(wsReadLimit)
 	doneC = make(chan struct{})
 	stopC = make(chan struct{})
+	active := true
+
 	go func() {
 		defer close(doneC)
 		silent := false
+
+		// await stop
 		go func() {
 			select {
 			case <-stopC:
 				silent = true
 			case <-doneC:
 			}
-			c.Close()
+			active = false
+			wsClient.Close()
 		}()
+
+		// auto-extend listen-key
+		if listenKeyID != "" {
+			go func() {
+				time.Sleep(extendListenKeyTimeout)
+
+				if !active {
+					return
+				}
+
+				if err := c.extendListenKey(listenKeyID); err != nil {
+					if !silent {
+						errHandler(fmt.Errorf("extend listen key: %w", err))
+					}
+				}
+			}()
+		}
+
+		// read messages
 		for {
-			_, message, err := c.ReadMessage()
+			_, message, err := wsClient.ReadMessage()
 			if err != nil {
 				if !silent {
 					errHandler(err)
@@ -94,7 +131,7 @@ var wsServe = func(
 				return
 			}
 
-			isPing, err := handlePing(c, decodedMsg)
+			isPing, err := handlePing(wsClient, decodedMsg)
 			if err != nil {
 				if !silent {
 					errHandler(err)
