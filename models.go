@@ -18,11 +18,6 @@ type OrderSpecType string
 type OrderWorkingType string
 
 const (
-	httpGET  = "GET"
-	httpPOST = "POST"
-)
-
-const (
 	endpointAccountBalance    = "/openApi/spot/v1/account/balance"
 	endpointCreateOrder       = "/openApi/spot/v1/trade/order"
 	endpointCreateOrdersBatch = "/openApi/spot/v1/trade/batchOrders"

@@ -44,9 +44,9 @@ func newWsConfig(endpoint string) *WsConfig {
 	}
 }
 
-func (c *SpotClient) extendListenKey(keyID string) error {
+func extendListenKey(client *Client, keyID string) error {
 	var result any
-	return c.client.sendRequest(
+	return client.sendRequest(
 		http.MethodPut,
 		endpointExtendListenKey,
 		map[string]interface{}{"listenKey": keyID},
@@ -54,8 +54,9 @@ func (c *SpotClient) extendListenKey(keyID string) error {
 	)
 }
 
-func (c *SpotClient) wsServe(
+func wsServe(
 	initMessage []byte,
+	client *Client,
 	listenKeyID string,
 	config *WsConfig,
 	handler WsHandler,
@@ -105,7 +106,7 @@ func (c *SpotClient) wsServe(
 					return
 				}
 
-				if err := c.extendListenKey(listenKeyID); err != nil {
+				if err := extendListenKey(client, listenKeyID); err != nil {
 					if !silent {
 						errHandler(fmt.Errorf("extend listen key: %w", err))
 					}
