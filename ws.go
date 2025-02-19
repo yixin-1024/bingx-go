@@ -13,6 +13,7 @@ import (
 const (
 	wsReadLimit            = 655350
 	extendListenKeyTimeout = time.Minute * 40
+	pingListenKeyTimeout   = time.Minute * 30
 )
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
@@ -65,19 +66,19 @@ func wsServe(
 	header := http.Header{}
 	header.Add("Accept-Encoding", "gzip")
 
-	wsClient, _, err := websocket.DefaultDialer.Dial(config.Endpoint, header)
+	wsConn, _, err := websocket.DefaultDialer.Dial(config.Endpoint, header)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	if initMessage != nil {
-		err = wsClient.WriteMessage(websocket.TextMessage, initMessage)
+		err = wsConn.WriteMessage(websocket.TextMessage, initMessage)
 		if err != nil {
 			return nil, nil, err
 		}
 	}
 
-	wsClient.SetReadLimit(wsReadLimit)
+	wsConn.SetReadLimit(wsReadLimit)
 	doneC = make(chan struct{})
 	stopC = make(chan struct{})
 	active := true
@@ -94,21 +95,41 @@ func wsServe(
 			case <-doneC:
 			}
 			active = false
-			wsClient.Close()
+			wsConn.Close()
 		}()
 
-		// auto-extend listen-key
 		if listenKeyID != "" {
+			// auto-extend listen-key
 			go func() {
-				time.Sleep(extendListenKeyTimeout)
+				for {
+					time.Sleep(extendListenKeyTimeout)
 
-				if !active {
-					return
+					if !active {
+						return
+					}
+
+					if err := extendListenKey(client, listenKeyID); err != nil {
+						if !silent {
+							errHandler(fmt.Errorf("extend listen key: %w", err))
+						}
+					}
 				}
+			}()
 
-				if err := extendListenKey(client, listenKeyID); err != nil {
-					if !silent {
-						errHandler(fmt.Errorf("extend listen key: %w", err))
+			// periodicaly ping listen-key
+			go func() {
+				for {
+					time.Sleep(pingListenKeyTimeout)
+
+					if !active {
+						return
+					}
+
+					if err := wsConn.WriteMessage(
+						websocket.PingMessage,
+						[]byte("keepalive"),
+					); err != nil && !silent {
+						errHandler(err)
 					}
 				}
 			}()
@@ -116,7 +137,7 @@ func wsServe(
 
 		// read messages
 		for {
-			_, message, err := wsClient.ReadMessage()
+			_, message, err := wsConn.ReadMessage()
 			if err != nil {
 				if !silent {
 					errHandler(err)
@@ -125,18 +146,14 @@ func wsServe(
 			}
 
 			decodedMsg, err := DecodeGzip(message)
-			if err != nil {
-				if !silent {
-					errHandler(err)
-				}
+			if err != nil && !silent {
+				errHandler(err)
 				return
 			}
 
-			isPing, err := handlePing(wsClient, decodedMsg)
-			if err != nil {
-				if !silent {
-					errHandler(err)
-				}
+			isPing, err := handlePing(wsConn, decodedMsg)
+			if err != nil && !silent {
+				errHandler(err)
 				continue
 			}
 			if isPing {
