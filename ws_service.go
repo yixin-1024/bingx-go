@@ -65,7 +65,7 @@ type KlineEvent struct {
 
 type WsKlineHandler func(KlineEvent)
 
-func (c *SpotClient) WsKlineServe(
+func WsKlineServe(
 	symbol string,
 	interval Interval,
 	handler WsKlineHandler,
