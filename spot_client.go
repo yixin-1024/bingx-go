@@ -247,7 +247,7 @@ func (c *SpotClient) GetSymbolInfo(symbol string) (*SymbolInfo, error) {
 	return &bingXResponse.Data.Symbols[0], err
 }
 
-func (c *SpotClient) GetTickers(symbol string) (*Ticker, error) {
+func (c *SpotClient) GetTickers(symbol string) ([]Ticker, error) {
 	endpoint := "/openApi/spot/v1/ticker/price"
 	params := map[string]interface{}{}
 	if symbol != "" {
@@ -259,7 +259,7 @@ func (c *SpotClient) GetTickers(symbol string) (*Ticker, error) {
 		return nil, err
 	}
 
-	var bingXResponse BingXResponse[Ticker]
+	var bingXResponse BingXResponse[[]Ticker]
 	err = json.Unmarshal(resp, &bingXResponse)
 	if err != nil {
 		return nil, err
@@ -267,5 +267,5 @@ func (c *SpotClient) GetTickers(symbol string) (*Ticker, error) {
 	if err := bingXResponse.Error(); err != nil {
 		return nil, err
 	}
-	return &bingXResponse.Data, err
+	return bingXResponse.Data, err
 }

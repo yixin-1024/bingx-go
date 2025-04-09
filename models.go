@@ -120,7 +120,15 @@ type SymbolInfo struct {
 }
 
 type Ticker struct {
-	Price     string `json:"price"`
-	Symbol    string `json:"symbol"`
+	Symbol string  `json:"symbol"`
+	Trades []Trade `json:"trades"`
+}
+
+type Trade struct {
 	Timestamp int64  `json:"timestamp"`
+	TradeId   string `json:"tradeId"`
+	Price     string `json:"price"`
+	Amount    string `json:"amount"`
+	Type      int    `json:"type"`
+	Volume    string `json:"volume"`
 }
