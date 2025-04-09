@@ -118,3 +118,9 @@ type SymbolInfo struct {
 	OffTime      int64   `json:"offTime"`      // 下线时间 (Unix时间戳)
 	MaintainTime int64   `json:"maintainTime"` // 维护时间 (秒)
 }
+
+type Ticker struct {
+	Price     string `json:"price"`
+	Symbol    string `json:"symbol"`
+	Timestamp int64  `json:"timestamp"`
+}
