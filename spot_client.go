@@ -269,3 +269,49 @@ func (c *SpotClient) GetTickers(symbol string) ([]Ticker, error) {
 	}
 	return bingXResponse.Data, err
 }
+
+func (c *SpotClient) GetDepositRecords(symbol string) ([]DepositRecord, error) {
+	endpoint := "/openApi/api/v3/capital/deposit/hisrec"
+	params := map[string]interface{}{}
+	if symbol != "" {
+		params["coin"] = symbol
+	}
+
+	resp, err := c.client.sendRequest("GET", endpoint, params)
+	if err != nil {
+		return nil, err
+	}
+
+	var bingXResponse BingXResponse[[]DepositRecord]
+	err = json.Unmarshal(resp, &bingXResponse)
+	if err != nil {
+		return nil, err
+	}
+	if err := bingXResponse.Error(); err != nil {
+		return nil, err
+	}
+	return bingXResponse.Data, err
+}
+
+func (c *SpotClient) GetWithdrawRecords(symbol string) ([]WithdrawRecord, error) {
+	endpoint := "/openApi/api/v3/capital/withdraw/history"
+	params := map[string]interface{}{}
+	if symbol != "" {
+		params["coin"] = symbol
+	}
+
+	resp, err := c.client.sendRequest("GET", endpoint, params)
+	if err != nil {
+		return nil, err
+	}
+
+	var bingXResponse BingXResponse[[]WithdrawRecord]
+	err = json.Unmarshal(resp, &bingXResponse)
+	if err != nil {
+		return nil, err
+	}
+	if err := bingXResponse.Error(); err != nil {
+		return nil, err
+	}
+	return bingXResponse.Data, err
+}

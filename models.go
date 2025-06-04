@@ -132,3 +132,59 @@ type Trade struct {
 	Type      int    `json:"type"`
 	Volume    string `json:"volume"`
 }
+
+//	{
+//	    "amount": "49999.00000000000000000000",
+//	    "coin": "USDTTRC20",
+//	    "network": "TRC20",
+//	    "status": 1,
+//	    "address": "TP******B4v",
+//	    "addressTag": "",
+//	    "txId": "60*****1d",
+//	    "insertTime": 1701557778000,
+//	    "unlockConfirm": "2/2",
+//	    "confirmTimes": "2/2"
+//	  }
+type DepositRecord struct {
+	Amount        string `json:"amount"`
+	Coin          string `json:"coin"`
+	Network       string `json:"network"`
+	Status        int    `json:"status"`
+	Address       string `json:"address"`
+	AddressTag    string `json:"addressTag"`
+	TxId          string `json:"txId"`
+	InsertTime    int64  `json:"insertTime"`
+	UnlockConfirm string `json:"unlockConfirm"`
+	ConfirmTimes  string `json:"confirmTimes"`
+}
+
+// [
+//
+//	{
+//	  "address": "TR****zc",
+//	  "amount": "3500.00000000000000000000",
+//	  "applyTime": "2023-12-14T04:05:02.000+08:00",
+//	  "coin": "USDTTRC20",
+//	  "id": "125*****98",
+//	  "network": "TRC20",
+//	  "transferType": 1,
+//	  "transactionFee": "1.00000000000000000000",
+//	  "confirmNo": 2,
+//	  "info": "",
+//	  "txId": "b9***********b67"
+//	}
+//
+// ]
+type WithdrawRecord struct {
+	Address        string `json:"address"`
+	Amount         string `json:"amount"`
+	ApplyTime      string `json:"applyTime"`
+	Coin           string `json:"coin"`
+	Id             string `json:"id"`
+	Network        string `json:"network"`
+	TransferType   int    `json:"transferType"`
+	TransactionFee string `json:"transactionFee"`
+	ConfirmNo      int    `json:"confirmNo"`
+	Info           string `json:"info"`
+	TxId           string `json:"txId"`
+}
